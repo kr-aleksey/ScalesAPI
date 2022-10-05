@@ -29,7 +29,7 @@ ___
         <label for="id_net_weight">Масса</label>
         <input type="number" name="net_weight" id="id_net_weight">
     </div>
-    <div class="row justify-content-center mt-3">
+    <div>
         <button type="submit">Отправить</button>
     </div>
 </form>
