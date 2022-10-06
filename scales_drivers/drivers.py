@@ -1,5 +1,5 @@
 import logging
-from decimal import Decimal, ROUND_05UP
+from decimal import Decimal, ROUND_HALF_UP
 from typing import Optional, Union
 
 from serial import Serial, SerialException
@@ -80,7 +80,7 @@ class Generic:
             raise ValueError(f'Unknown unit={unit}')
         scales_factor = self.FACTOR[self.unit]
         exp = Decimal(f'0.{"0" * decimal_places}')
-        return (self.weight * scales_factor / factor).quantize(exp, ROUND_05UP)
+        return (self.weight * scales_factor / factor).quantize(exp, ROUND_HALF_UP)
 
 
 class CASType6(Generic):
