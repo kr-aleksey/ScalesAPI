@@ -1,11 +1,11 @@
 import logging
 
+import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from scales import Scales
 
-logging.info('Started')
 
 scales = Scales()
 
@@ -27,3 +27,13 @@ async def get_weight(scales_id: int):
     except KeyError:
         raise HTTPException(404)
     return {'weight': weight, 'status': status}
+
+
+@app.on_event("shutdown")
+def shutdown_event():
+    logging.info('Завершение работы')
+    scales.shutdown()
+
+
+if __name__ == '__main__':
+    uvicorn.run("main:app", host='127.0.0.1', port=8001, log_level='info')

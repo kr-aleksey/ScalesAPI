@@ -39,3 +39,8 @@ class Scales:
         scales = self.scales[scales_id]
         status = settings.STATUS.get(scales.get_status())
         return status
+
+    def shutdown(self):
+        for scales in self.scales.values():
+            if scales.port.is_open:
+                scales.port.close()

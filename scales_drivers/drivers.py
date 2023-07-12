@@ -6,6 +6,8 @@ from serial import Serial, SerialException
 
 from .exceptions import ScalesException, SerialError
 
+logger = logging.getLogger()
+
 
 class Generic:
     GR: str = 'gr'
@@ -46,17 +48,22 @@ class Generic:
         self.port.timeout = self.port_params['timeout']
         try:
             logging.debug(f'Opening a serial port {self.port.port}')
+            self.port.reset_input_buffer()
+            self.port.reset_output_buffer()
             self.port.open()
+
+
         except SerialException as error:
             raise SerialError(error)
         return self.port.is_open
 
     def scales_reinit(self):
-        logging.debug(f'Scales reinitialization.')
+        logger.debug(f'Scales reinitialization.')
         try:
             if self.port.is_open:
                 self.port.close()
             self.port.open()
+            self.port.flush()
         except SerialException as error:
             logging.error(f'Device initialization error. {error}')
 
@@ -160,7 +167,7 @@ class CASType6(Generic):
         return unit
 
     def parse_status(self, response: bytes) -> int:
-        """Parsing the scales status."""
+        """Parsing the scales' status."""
         sta: int = response[self.STA_ADDR]
         status: Optional[int] = self.STATUS.get(sta)
         if status is None:
@@ -180,7 +187,6 @@ class CASType6(Generic):
         self.weight: Decimal = self.parse_value(response)
         logging.debug('Parsing the weight unit')
         self.unit: str = self.parse_unit(response)
-
 
     @staticmethod
     def bcc(data: Union[list[int], bytes]) -> int:
